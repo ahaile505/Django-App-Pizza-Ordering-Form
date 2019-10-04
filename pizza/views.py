@@ -20,8 +20,11 @@ def order(request):
                 filled_form.cleaned_data['topping2'],
                 )
 
-            new_form = PizzaForm()
-            return render(request, 'pizza/order.html', {'created_pizza_pk': created_pizza_pk,'pizzaform': new_form, 'note':note , 'multiple_form':multiple_form})
+            filled_form = PizzaForm()
+        else:
+            created_pizza_pk = None
+            note = 'Pizza order has failed. Try again. '
+        return render(request, 'pizza/order.html', {'created_pizza_pk': created_pizza_pk,'pizzaform': filled_form, 'note':note , 'multiple_form':multiple_form})
     else:
         form = PizzaForm()
         return render(request, 'pizza/order.html', {'pizzaform': form, 'multiple_form':multiple_form})
@@ -49,4 +52,15 @@ def pizzas(request):
         return render(request, 'pizza/pizzas.html', {'formset': formset})
 
 def edit_order(request, pk):
-    pizza = Pizza.objects.get
+    pizza = Pizza.objects.get(pk=pk)
+    form = PizzaForm(instance=pizza)
+    if request.method == 'POST':
+        filled_form = PizzaForm(request.POST, instance=pizza)
+
+        if filled_form.is_valid():
+            filled_form.save()
+            form = filled_form
+            note = 'Order has been updated'
+            return render(request, 'pizza/order.html', {'note':note, 'pizzaform': form, 'pizza':pizza})
+    return render(request, 'pizza/order.html', {'pizzaform': form, 'pizza':pizza})
+

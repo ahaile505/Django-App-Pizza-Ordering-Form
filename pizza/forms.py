@@ -38,6 +38,5 @@ class PizzaForm(forms.ModelForm):
         labels = {'topping1': 'Topping 1','topping2': 'Topping 2', 'size': 'Size' }
 
 class MutiplePizzaForm(forms.Form):
-
     number = forms.IntegerField(min_value=2, max_value=6)
   
